@@ -8,7 +8,7 @@ nav_order: 8
 
 In kubernetes world there is no concept of rescheduling. When pods are bounded to a
 node they run till termination. In a case of hardware failure, or some other
-resource problem that hang the OS, there is no built-in solution to migrate or
+resource problem that hangs the OS, there is no built-in solution to migrate or
 restart existing pods.
 
 If the node misbehaves, and processes can not run anymore the control
