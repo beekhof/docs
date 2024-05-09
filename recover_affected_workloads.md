@@ -13,20 +13,24 @@ restart existing pods.
 
 If the node misbehaves, and processes can not run anymore the control
 plane will start counting down. It will either be the kubelet process which doesn't
-report status to the control plane [(see node_status_update_frequency)][1] or
+report status to the control plane (see [node_status_update_frequency][]) or
 the containers themselves will fail/crash and be marked as `phase: failed`.
 Nodes status conditions, set by the node-controller in the control plane, will
 reflect the current status and how long the node has been in that state.
 For example, in the case where the node fails to update its status to the
 masters the node condition will be set to `type:Ready status:Unknown`.
 
-In order to gain the workload back, reschedule it and start it all over, the
-control plane needs to know that the running node is gone and the only way to achieve
-that is by deleting the node object, which will trigger [scheduling the pods for
-deletion][2]
+In order to gain the workload back, reschedule it and start it all over, the control plane
+needs to know that the running node is gone and there are two strategies that accomplish
+that:
 
-The job of [self-node-remediation](/remediation/self-node-remediation/self-node-remediation/) is to reboot a failing host, delete its node object,
-,and recreate it to restore the node to a working state.
+- `ResourceDeletion`, which will remove the pods on the node (rather than removing the
+node object) recovering the workloads faster.
+- [`OutOfServiceTaint`][], which triggers pods on the node to be forcefully deleted if
+there are no matching tolerations on the pods. Persistent volumes attached to the shutdown
+node will be detached, and new pods will be created successfully on a different running
+node. This is the recommended way to do it.
+
 
 # Pod recovery flow
 
@@ -48,7 +52,8 @@ After a successful unpublishing the pod and the volume can start again, on a dif
 node.
 
 ## Virtualized worker node
-Nodes which are VMs should be configured with a watchdog device ([see libvirt's watchdog support][3])
+
+Nodes which are VMs should be configured with a watchdog device (see [libvirt's watchdog support][])
 In case it's not configured then self-node-remediation fallbacks to rebooting the machine
 using 'systemctl reboot'. The benefits of a virtualized watchdog is that its running
 on the hypervisor and is not vulnerable to resource starvation problem in the VM level
@@ -58,6 +63,6 @@ resulting a quicker reboot action.
 
 TBD
 
-[1]: https://kubernetes.io/docs/reference/command-line-tools-reference/kubelet/
-[2]: https://kubernetes.io/docs/concepts/workloads/pods/pod-lifecycle/#pod-garbage-collection
-[3]: https://libvirt.org/formatdomain.html#watchdog-device
+[node_status_update_frequency]: https://kubernetes.io/docs/reference/command-line-tools-reference/kubelet/
+[`OutOfServiceTaint`]: https://kubernetes.io/docs/reference/labels-annotations-taints/#node-kubernetes-io-out-of-service
+[libvirt's watchdog support]: https://libvirt.org/formatdomain.html#watchdog-device
