@@ -21,16 +21,18 @@ For example, in the case where the node fails to update its status to the
 masters the node condition will be set to `type:Ready status:Unknown`.
 
 In order to gain the workload back, reschedule it and start it all over, the control plane
-needs to know that the running node is gone and there are two strategies that accomplish
-that:
+needs to know that the the workloads's pod is not running anymore. There are two
+strategies to accomplish that:
 
-- `ResourceDeletion`, which will remove the pods on the node (rather than removing the
-node object) recovering the workloads faster.
-- [`OutOfServiceTaint`][], which triggers pods on the node to be forcefully deleted if
-there are no matching tolerations on the pods. Persistent volumes attached to the shutdown
-node will be detached, and new pods will be created successfully on a different running
-node. This is the recommended way to do it.
+- [`OutOfServiceTaint`][] (new core Kubernetes feature named [Non-Graceful Node
+  Shutdown]), which triggers pods on the node to be forcefully deleted if there are no
+  matching tolerations on the pods. Persistent volumes attached to the shutdown node will
+  be detached, and new pods will be created successfully on a different running node. This
+  is the recommended strategy.
 
+- `ResourceDeletion`, which will remove the pods on the node. This strategy is still supported for
+  backward compatibility with clusters running Kubernetes versions that do not support Non-Graceful
+  Node Shutdown feature, but it is discouraged.
 
 # Pod recovery flow
 
@@ -65,4 +67,5 @@ TBD
 
 [node_status_update_frequency]: https://kubernetes.io/docs/reference/command-line-tools-reference/kubelet/
 [`OutOfServiceTaint`]: https://kubernetes.io/docs/reference/labels-annotations-taints/#node-kubernetes-io-out-of-service
+[Non-Graceful Node Shutdown]: https://kubernetes.io/blog/2023/08/16/kubernetes-1-28-non-graceful-node-shutdown-ga/
 [libvirt's watchdog support]: https://libvirt.org/formatdomain.html#watchdog-device
