@@ -8,7 +8,7 @@ nav_order: 8
 
 In kubernetes world there is no concept of rescheduling. When pods are bounded to a
 node they run till termination. In a case of hardware failure, or some other
-resource problem that hangs the OS, there is no built-in solution to migrate or
+resource problem that freezes the OS, there is no built-in solution to migrate or
 restart existing pods.
 
 If the node misbehaves, and processes can not run anymore the control
@@ -21,16 +21,16 @@ For example, in the case where the node fails to update its status to the
 masters the node condition will be set to `type:Ready status:Unknown`.
 
 In order to gain the workload back, reschedule it and start it all over, the control plane
-needs to know that the the workloads's pod is not running anymore. There are two
+needs to know that the the workload's pod is not running anymore. There are two
 strategies to accomplish that:
 
-- [`OutOfServiceTaint`][] (new core Kubernetes feature named [Non-Graceful Node
-  Shutdown]), which triggers pods on the node to be forcefully deleted if there are no
+- [`OutOfServiceTaint`][] - new core Kubernetes feature named [Non-Graceful Node
+  Shutdown], it triggers pods on the node to be forcefully deleted if there are no
   matching tolerations on the pods. Persistent volumes attached to the shutdown node will
-  be detached, and new pods will be created successfully on a different running node. This
+  be detached, and new pods will be created on a different running node. This
   is the recommended strategy.
 
-- `ResourceDeletion`, which will remove the pods on the node. This strategy is still supported for
+- `ResourceDeletion` - it deletes the pods on the node. This strategy is still supported for
   backward compatibility with clusters running Kubernetes versions that do not support Non-Graceful
   Node Shutdown feature, but it is discouraged.
 
