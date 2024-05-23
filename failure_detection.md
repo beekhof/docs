@@ -14,7 +14,7 @@ nav_order: 3
 {:toc}
 
 A Node entering an unready state after 5 minutes is an obvious sign that a
-failure occurred. However there may be other criteria or thresholds that are
+failure occurred. However, there may be other criteria or thresholds that are
  more appropriate based on your particular physical environment, workloads, 
  and tolerance for risk.
 
