@@ -15,7 +15,7 @@ nav_order: 9
 
 ## How do I pronounce Medik8s?
 
-Medik8s is intended to be a playful misspelling of the English word "medicates" and is pronouced the same way.
+Medik8s is intended to be a playful misspelling of the English word "medicates" and is pronounced the same way.
 
 ## Does Medik8s require OpenShift?
 
